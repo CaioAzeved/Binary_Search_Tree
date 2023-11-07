@@ -1,5 +1,7 @@
 package src;
 
+import java.util.ArrayList;
+
 public class BST {
     public Node root;
     public int max_level;
@@ -87,25 +89,50 @@ public class BST {
     	return node;
     }
     
-    public int findNthElement(Node node, int n) {
-    	int count = node.value;
-		if((node.left != null) && (n != 0)) {
-    		count = findNthElement(node.left, n);
-    		
+    public int findNthElement(Node node, Integer n, ArrayList<Integer> count) {
+    	Integer sum = root.qtd_LNodes + 1 + root.qtd_RNodes;
+    	if(n > sum) {
+    		return -1;
     	}
-		--n;
-		if(n == 0) {
-			return count;
+    	int key = -1;
+		if(node.left != null) {
+    		key = findNthElement(node.left, n, count);
+    	}
+		System.out.println(count);
+    	System.out.println(node.value);
+    	if(key != -1) {
+    		return key;
+    	}
+		count.set(0, count.get(0) + 1);
+		if(count.get(0) == n) {
+			System.out.println("Achou");
+			return node.value;
 		}
-		count = node.value;
-    	if((node.right != null) && (n != 0)) {
-    		count = findNthElement(node.right, n);
+    	if(node.right != null) {
+    		key = findNthElement(node.right, n, count);
     	}
-    	return count;
+    	
+    	return key;
     }
     
-    public int findPosition(Node node, int pos, int m, int y) {
-    	
+    public int findPosition(Node node, int key, ArrayList<Integer> pos) {
+    	if(key != node.value) {
+    		if(node.left != null) {
+    			pos.set(0, findPosition(node.left, key, pos));
+        	}
+    		if(key == node.value) {
+    			return pos.get(0);
+    		}
+    		pos.set(0, pos.get(0) + 1);
+        	if(node.right != null) {
+        		pos.set(0, findPosition(node.right, key, pos));
+        	}
+        	if((node.left != null) && (node.right != null)) {
+        		pos.set(0, 0);
+        	}
+    	}
+
+    	return pos.get(0);
     }
     
     public boolean ItIsFull(Node node, boolean bool) {
