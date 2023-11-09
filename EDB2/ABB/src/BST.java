@@ -87,8 +87,76 @@ public class BST {
     	return bool;
     }
     
+    private Node pred(Node node) {
+    	Node node_fake = null;
+    	if(node.right != null) {
+    		node_fake = pred(node.right);
+    	}
+    	else {
+    		node_fake = node;
+    	}
+    	if(node_fake != null) {
+    		return node_fake;
+    	}
+    	return node;
+    }
+    
+    private Node succ(Node node) {
+    	if(node.left != null) {
+    		succ(node.left);
+    	}
+    	return node;
+    }
+    
+    //root, key
+    
+    public void remove(Node node, int key) {
+    	if(key == node.value) {
+    		if((node.left == null) && (node.right == null)) {
+        		node = null;
+        	}
+    		else if(node.left == null) {
+    			node = node.right; 
+    		}
+    		else if(node.right == null) {
+    			node = node.left;
+    		}
+    		else if(node.qtd_LNodes <= node.qtd_RNodes) {
+    			pred(node).left = node.left;
+    			pred(node).right = node.right;
+    			node = pred(node);
+    		}
+    		else {
+    			succ(node).left = node.left;
+    			succ(node).right = node.right;
+    			node = succ(node);
+    		}
+    	}
+    	else if(key < node.value) {
+    		if(node.left != null) {
+    			remove(node.left, key);
+    		}
+    		else {
+    			System.out.println("Chave não encontrada");
+    		}
+    	}
+    	else {
+    		if(node.right != null) {
+    			remove(node.right, key);
+    		}
+    		else {
+    			System.out.println("Chave não encontrada");
+    		}
+    	}
+    	if(node == null) {
+    		System.out.println("Não há nenhum nó na árvore");
+    	}
+    	
+    }
+    
     public int findNthElement(Node node, Integer n, ArrayList<Integer> count) {
     	if(n > number_of_nodes) {
+    		//System.out.println("Acharei");
     		return -1;
     	}
     	int key = -1;
@@ -98,11 +166,12 @@ public class BST {
 		//System.out.println(count);
     	//System.out.println(node.value);
     	if(key != -1) {
+    		//System.out.println("Achou");
     		return key;
     	}
 		count.set(0, count.get(0) + 1);
 		if(count.get(0) == n) {
-			//System.out.println("Achou");
+			//System.out.println("Achei");
 			return node.value;
 		}
     	if(node.right != null) {
@@ -111,25 +180,26 @@ public class BST {
     	
     	return key;
     }
-    
-    public int findPosition(Node node, int key, ArrayList<Integer> pos) {
-    	if(key != node.value) {
-    		if(node.left != null) {
-    			pos.set(0, findPosition(node.left, key, pos));
-        	}
-    		pos.set(0, pos.get(0) + 1);
-        	if(node.right != null) {
-        		pos.set(0, findPosition(node.right, key, pos));
-        	}
-        	if((node.left != null) && (node.right != null)) {
-        		pos.set(0, 0);
-        	}
+    //root, key, 0, false
+    public int findPosition(Node node, int key, int pos, ArrayList<Boolean> bool) {
+    	if(node.left != null) {
+			pos = findPosition(node.left, key, pos, bool);
     	}
-
-    	return pos.get(0);
+    	if(bool.get(0)) {
+    		return pos;
+    	}
+		++pos;
+		if(key == node.value) {
+			bool.set(0, true);
+			return pos;
+		}
+    	if(node.right != null) {
+    		pos = findPosition(node.right, key, pos, bool);
+    	}
+    	return pos;
     }
     
-    public int average() {
+    public int median() {
     	ArrayList<Integer> count = new ArrayList<Integer>();
 		count.add(0);
 		int n;
@@ -137,7 +207,7 @@ public class BST {
 			return root.value;
 		}
     	if(number_of_nodes % 2 == 1) {
-    		return findNthElement(root, number_of_nodes/2, count);
+    		return findNthElement(root, number_of_nodes/2 + 1, count);
     	}
     	if(findNthElement(root, number_of_nodes/2, count) < findNthElement(root, number_of_nodes/2 + 1, count)) {
     		n = findNthElement(root, number_of_nodes/2, count);
@@ -146,6 +216,33 @@ public class BST {
     		n = findNthElement(root, number_of_nodes/2 + 1, count);
     	}
     	return n;
+    }
+    //root, key, 0, false 
+    public double average(Node node, int key, double sum, ArrayList<Boolean> bool) {
+    	if((node.value == key) || (bool.get(0))) {
+    		sum = sum + node.value;
+    		bool.set(0,  true);
+    		if(node.left != null) {
+        		sum = average(node.left, key, sum, bool);
+        	}
+        	if(node.right != null) {
+        		sum = average(node.right, key, sum, bool);
+        	}
+    	}
+    	else if(key < node.value) {
+    		if(node.left != null) {
+    			sum = average(node.left, key, sum, bool);
+    		}
+    	}
+    	else {
+    		if(node.right != null) {
+    			sum = average(node.right, key, sum, bool);
+    		}
+    	}
+    	if(node.value == key) {
+    		return sum/(node.qtd_LNodes + 1 + node.qtd_RNodes); 
+    	}
+    	return sum;
     }
     
     //root, true
