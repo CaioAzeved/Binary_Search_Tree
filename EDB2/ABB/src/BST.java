@@ -124,7 +124,10 @@ public class BST {
     			ArrayList<Boolean> bool = new ArrayList<Boolean>();
     			bool.add(true);
     			Node node_fake = new Node(node.value, node.level);
-    			pred(node_fake, bool);
+    			node_fake = node;
+    			node_fake = pred(node_fake, bool);
+    			node.value = node_fake.value;
+    			node_fake = null;
     		}
     		else {
     			succ(node).left = node.left;
