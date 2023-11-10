@@ -87,16 +87,15 @@ public class BST {
     	return bool;
     }
     
-    private Node pred(Node node) {
-    	Node node_fake = null;
-    	if(node.right != null) {
-    		node_fake = pred(node.right);
-    	}
-    	else {
-    		node_fake = node;
-    	}
-    	if(node_fake != null) {
-    		return node_fake;
+    //node, true
+    private Node pred(Node node, ArrayList<Boolean> bool) {
+    	if(bool.get(0)) {
+    		if(node.right != null) {
+        		node = pred(node.right, bool);
+        	}
+    		else {
+    			bool.set(0, false);
+    		}
     	}
     	return node;
     }
@@ -122,9 +121,10 @@ public class BST {
     			node = node.left;
     		}
     		else if(node.qtd_LNodes <= node.qtd_RNodes) {
-    			pred(node).left = node.left;
-    			pred(node).right = node.right;
-    			node = pred(node);
+    			ArrayList<Boolean> bool = new ArrayList<Boolean>();
+    			bool.add(true);
+    			Node node_fake = new Node(node.value, node.level);
+    			pred(node_fake, bool);
     		}
     		else {
     			succ(node).left = node.left;

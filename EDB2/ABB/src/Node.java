@@ -7,6 +7,8 @@ public class Node {
 	public int qtd_LNodes;
 	public int qtd_RNodes;
 	public int level;
+	
+	
 
 	
 	public Node (int value, int level) {
